@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "shithead"
+version = "0.1.0"
+description = ""
+authors = ""
+
+[tool.poetry.dependencies]
+python = "^3.7"
+numpy = "^1.18"
+pyglet = "^1.5"
+fastapi = "^0.53.0"
+typer = "^0.1.1"
+uvicorn = "^0.11.3"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.7"
+black = { version = "*", allows-prereleases = true }
+
+[tool.black]
+line-length = 140
+skip-string-normalization = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
