@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "shithead"
+name = "shit head"
 version = "0.1.0"
 description = ""
-authors = ""
+authors = ["samuel_stegmeyer@posteo.de"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
