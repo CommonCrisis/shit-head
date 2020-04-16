@@ -4,7 +4,7 @@ class Player:
         self.hand = []
         self.hidden_cards = []
         self.top_cards = []
-        self.is_turn = False
+        self.is_turn = True
         self.won = False
 
     def play_card(self, card):

@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "shit head"
+name = "shithead"
 version = "0.1.0"
 description = ""
-authors = ["samuel_stegmeyer@posteo.de"]
+authors = [""]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -14,7 +14,7 @@ uvicorn = "^0.11.3"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
-black = { version = "*", allows-prereleases = true }
+black = { version = "*", allow-prereleases = true }
 
 [tool.black]
 line-length = 140
