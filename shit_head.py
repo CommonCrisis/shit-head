@@ -48,8 +48,9 @@ def get_board(game_id: str, player_id: str):
     if game_id == 'testid':
         return {
             'game': {
-                'hand_cards': ['2_H'],
-                'upper_cards': ['2_H'],
+                'hand_cards': ['2_H', '2_H', '2_H'],
+                'top_cards': ['2_H', '2_H', '2_H'],
+                'hidden_cards': ['2_H', '2_H', '2_H'],
                 'pile': ['2_H'],
                 'deck': ['2_H']
             }
@@ -58,7 +59,7 @@ def get_board(game_id: str, player_id: str):
     current_game = running_games[game_id]
     game = {
         'hand_cards': current_game.players[player_id].hand,
-        'upper_cards': current_game.players[player_id].top_cards,
+        'top_cards': current_game.players[player_id].top_cards,
         'hidden_cards': current_game.players[player_id].hidden_cards,
         'pile': current_game.pile,
         'deck': current_game.deck
