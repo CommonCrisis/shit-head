@@ -39,7 +39,7 @@ class Player:
         if card_type == 'top':
             self.top_cards.remove(card)
 
-        if card_type == 'hidden_cards':
+        if card_type == 'hidden':
             self.hidden_cards.remove(card)
 
     def win(self):

@@ -52,3 +52,5 @@ CARD_DECK = [
     '13_D',
     '14_D'
 ]
+
+# CARD_DECK = ['2_H'] * 10

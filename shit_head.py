@@ -26,7 +26,7 @@ running_games = {}
 @app.get('/play/new-game')
 def start_game(names: List[str] = Query(None)):
     # game_id = str(uuid.uuid4())
-    game_id = '8-03df-4d77-9'
+    game_id = 'ballern'
 
     players = {name: Player(name) for name in names}
     new_game = Board(players, game_id)
@@ -65,12 +65,6 @@ def get_board(game_id: str, player_id: str):
         'deck': current_game.deck
     }
     return {'game': game}
-
-
-# @app.get('/play/{game_id}/init-game')
-# def init_game(game_id: str):
-#     running_games[game_id].give_cards()
-#     return {'info': 'cards given'}
 
 
 @app.get('/play/{game_id}/{player_id}/play_card/{card}')

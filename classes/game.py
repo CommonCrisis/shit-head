@@ -65,7 +65,8 @@ class Board:
 
         # Check if you need to be less than 6
         if self._get_val(self.pile[-1]) == 5 and self._get_val(card) > 5 and self._get_val(card) != 10:
-            player.hand.append(played_card)
+            # player.hand.append(played_card)
+            self.take_pile(player, played_card)
             return self.messages[3]
 
         if self._get_val(self.pile[-1]) == 5 and self._get_val(card) in [2, 3, 4, 5, 10]:
