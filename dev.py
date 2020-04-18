@@ -27,11 +27,7 @@
 #     print(len(player_1.hand))
 
 
-players = {
-    'die': 'erster',
-    'das': 'zweiter',
-    'der': 'dritter'
-    }
+players = {'die': 'erster', 'das': 'zweiter', 'der': 'dritter'}
 
 
 print('asd')

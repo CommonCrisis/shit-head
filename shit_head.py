@@ -13,11 +13,7 @@ origins = [
 ]
 
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
 
 running_games = {}
@@ -32,14 +28,14 @@ def start_game(names: List[str] = Query(None)):
     new_game = Board(players, game_id)
     running_games.update({game_id: new_game})
     running_games[game_id].give_cards()
-    
+
     return {'game_id': game_id}
 
 
 @app.get('/play/{game_id}/end-game')
 def kill_game(game_id: str):
     del running_games[game_id]
-    
+
     return {'info': f'Game with ID {game_id} has been closed'}
 
 
@@ -52,7 +48,7 @@ def get_board(game_id: str, player_id: str):
                 'top_cards': ['2_H', '2_H', '2_H'],
                 'hidden_cards': ['2_H', '2_H', '2_H'],
                 'pile': ['2_H'],
-                'deck': ['2_H']
+                'deck': ['2_H'],
             }
         }
 
@@ -62,7 +58,7 @@ def get_board(game_id: str, player_id: str):
         'top_cards': current_game.players[player_id].top_cards,
         'hidden_cards': current_game.players[player_id].hidden_cards,
         'pile': current_game.pile,
-        'deck': current_game.deck
+        'deck': current_game.deck,
     }
     return {'game': game}
 

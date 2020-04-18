@@ -109,7 +109,7 @@ class Board:
         else:
             next_player_name = list(self.players.keys())[0]
             return next_player_name
-        
+
     def pass_turn(self, player: Player):
         if player.is_turn:
             player.is_turn = False
