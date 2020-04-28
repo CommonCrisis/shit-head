@@ -1,7 +1,9 @@
 import random as rnd
-from typing import List, Dict
-from .player import Player
+from typing import Dict, List
+
 from utils.card_deck import CARD_DECK
+
+from .player import Player
 
 
 class Board:
@@ -18,6 +20,7 @@ class Board:
             3: 'Play a card lower than 6',
             4: 'It\'s not your turn',
         }
+        self.game_started = False
 
     def _get_val(self, card):
         return int(card.split('_')[0])
@@ -93,12 +96,11 @@ class Board:
             return f'Player played {card}'
 
         else:
-            self.take_pile(player, played_card)
+            player.hand.append(played_card)
             return 'No card to play...'
 
-    def take_pile(self, player: Player, card: str):
+    def take_pile(self, player: Player):
         player.hand.extend(self.pile)
-        player.hand.append(card)
         self.pile = []
 
     def _get_next_player(self, current_player: Player):
