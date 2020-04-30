@@ -12,7 +12,7 @@ class Board:
     def __init__(self, players: Dict[str, Player], game_id: str):
         self.game_id = game_id
         self.pile = []
-        self.deck = CARD_DECK
+        self.deck = CARD_DECK.copy()
         rnd.shuffle(self.deck)
         self.players = players
         self.messages = {

@@ -59,7 +59,7 @@ def give_cards(game_id: str):
 
 
 @app.get('/play/{game_id}/get_players')
-def get_players(game_id: str):
+async def get_players(game_id: str):
     if game_id not in running_games.keys():
         return {'error': f'Game ID {game_id} does not exist'}
 
@@ -69,7 +69,7 @@ def get_players(game_id: str):
 
 
 @app.get('/play/{game_id}/add_player/{player_name}')
-def add_players(game_id: str, player_name: str):
+async def add_players(game_id: str, player_name: str):
     if game_id not in running_games.keys():
         return server_message('warning', f'Game ID {game_id} does not exist')
     if running_games[game_id].game_started:
@@ -99,7 +99,7 @@ def leave_game(game_id: str, player_name: str):
 
 
 @app.get('/play/{game_id}/{player_name}/update')
-def get_board(game_id: str, player_name: str):
+async def get_board(game_id: str, player_name: str):
     current_game = running_games[game_id]
     if player_name not in list(current_game.players.keys()):
         return server_message('error', f'You are not part of this game!')
@@ -130,7 +130,7 @@ def get_board(game_id: str, player_name: str):
 
 
 @app.get('/play/{game_id}/{player_name}/play_card/{card}')
-def play_turn(game_id: str, player_name: str, card: str):
+async def play_turn(game_id: str, player_name: str, card: str):
     player = running_games[game_id].players[player_name]
     message_type, message = running_games[game_id].play_turn(player, card)
 
