@@ -16,7 +16,7 @@
             "name": "Python: FastAPI",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceRoot}/shit_head.py",
+            "program": "${workspaceRoot}/app/shit_head.py",
             "console": "internalConsole",
             "cwd": "${workspaceRoot}/"
         },

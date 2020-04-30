@@ -4,8 +4,15 @@ class Player:
         self.hand = []
         self.hidden_cards = []
         self.top_cards = []
-        self.is_turn = True
-        self.won = False
+        self.is_turn = False
+        self.has_won = False
+
+    def check_won_game(self):
+        if self.has_won:
+            return True
+        if not self.hand and not self.hidden_cards and not self.top_cards:
+            self.has_won = True
+        return False
 
     def play_card(self, card):
         if card in self.hand:
@@ -28,7 +35,7 @@ class Player:
 
         elif card in self.hidden_cards and self.top_cards:
             return 1
-
+            
         else:
             return 2
 
