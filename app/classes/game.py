@@ -12,7 +12,7 @@ class Board:
     def __init__(self, players: Dict[str, Player], game_id: str):
         self.game_id = game_id
         self.pile = []
-        self.deck = CARD_DECK
+        self.deck = CARD_DECK.copy()
         rnd.shuffle(self.deck)
         self.players = players
         self.messages = {
@@ -64,7 +64,7 @@ class Board:
                 del self.deck[0]
 
     def _played_card_message(self, card: str) -> str:
-        return rnd.choice(GOOD_JOB)
+        return rnd.choice(GOOD_JOB.copy())
 
     def _test_bomb(self, card: str, pile: List[str]) -> str:
         if self._get_val(card) == 10:

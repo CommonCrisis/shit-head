@@ -35,7 +35,6 @@ class Player:
 
         elif card in self.hidden_cards and self.top_cards:
             return 1
-            
         else:
             return 2
 
