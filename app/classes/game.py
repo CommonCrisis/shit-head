@@ -64,7 +64,7 @@ class Board:
                 del self.deck[0]
 
     def _played_card_message(self, card: str) -> str:
-        return rnd.choice(GOOD_JOB)
+        return rnd.choice(GOOD_JOB.copy())
 
     def _test_bomb(self, card: str, pile: List[str]) -> str:
         if self._get_val(card) == 10:
