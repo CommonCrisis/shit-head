@@ -149,4 +149,4 @@ def take_pile(game_id: str, player_name: str):
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=54321, log_level='info')
+    uvicorn.run(app, host='127.0.0.1', port=5000, log_level='info')
