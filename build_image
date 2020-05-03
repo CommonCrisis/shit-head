@@ -1,9 +1,0 @@
-#!/bin/bash 
-
-docker -H localhost:2375 build -t 076284804692.dkr.ecr.eu-central-1.amazonaws.com/backend .
-aws ecr get-login-password \
-    | docker login \
-        --password-stdin \
-        --username AWS \
-        "076284804692.dkr.ecr.eu-central-1.amazonaws.com/backend"
-docker -H localhost:2375 push 076284804692.dkr.ecr.eu-central-1.amazonaws.com/backend
