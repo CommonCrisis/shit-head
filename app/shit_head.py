@@ -111,18 +111,17 @@ async def get_board(game_id: str, player_name: str):
         return server_message('success', f'You have won the game!')
 
     current_game.draw_cards(player)
-    game_overview = {}
+    game_overview = {'players': []}
 
     for player_name in current_game.players.keys():
-        game_overview.update(
+        game_overview['players'].append(
             {
-                player_name: {
-                    'hand_cards': current_game.players[player_name].hand,
-                    'top_cards': current_game.players[player_name].top_cards,
-                    'hidden_cards': current_game.players[player_name].hidden_cards,
-                    'is_turn': current_game.players[player_name].is_turn,
-                    'has_won': current_game.players[player_name].has_won,
-                }
+                'player_name': player_name,
+                'hand_cards': current_game.players[player_name].hand,
+                'top_cards': current_game.players[player_name].top_cards,
+                'hidden_cards': current_game.players[player_name].hidden_cards,
+                'is_turn': current_game.players[player_name].is_turn,
+                'has_won': current_game.players[player_name].has_won,
             }
         )
     game_overview.update({'board_cards': {'pile': current_game.pile, 'deck': current_game.deck}, 'type': 'update', 'message': ''})

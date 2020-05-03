@@ -70,7 +70,7 @@ class Board:
         if self._get_val(card) == 10:
             return True
         if len(self.pile) >= 3:
-            last_cards = [self._get_val(c) for c in self.pile[-3:]] + [card]
+            last_cards = [self._get_val(c) for c in self.pile[-3:]] + [self._get_val(card)]
             if all(x == last_cards[0] for x in last_cards):
                 return True
 
@@ -122,7 +122,7 @@ class Board:
             return 'warning', self.messages[3]
 
         # Check if you need to be less than 6 and you have the correct card
-        if self._get_val(self.pile[-1]) == 5 and self._get_val(card) in lower_five_playable:
+        if self._get_val(self.pile[-1]) == 5 and self._get_val(card) in lower_five_playable or self._get_val(card) in always_playable:
             return 'success', self._play_card(card, player, self.pile)
 
         # Turn and playable card
