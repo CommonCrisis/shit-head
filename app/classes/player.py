@@ -6,6 +6,7 @@ class Player:
         self.top_cards = []
         self.is_turn = False
         self.has_won = False
+        self.is_ready = False
 
     def check_won_game(self):
         if self.has_won:

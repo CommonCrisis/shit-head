@@ -1,0 +1,15 @@
+#!/bin/bash
+
+ecsClusterName=ShitHeadCluster
+nameTaskDefinition=first-run-task-definition:4
+
+docker -H localhost:2375 build -t 076284804692.dkr.ecr.eu-central-1.amazonaws.com/backend .
+aws ecr get-login-password \
+    | docker login \
+        --password-stdin \
+        --username AWS \
+        "076284804692.dkr.ecr.eu-central-1.amazonaws.com/backend"
+docker -H localhost:2375 push 076284804692.dkr.ecr.eu-central-1.amazonaws.com/backend
+
+OLD_TASK_ID=$(aws ecs list-tasks --cluster ${ecsClusterName} --desired-status RUNNING | egrep "task/" | sed -E "s/.*task\/(.*)\"/\1/")
+aws ecs stop-task --cluster ${ecsClusterName} --task ${OLD_TASK_ID}

@@ -39,6 +39,10 @@ class NewGame(BaseModel):
     game_id: str
 
 
+class SetTopCards(BaseModel):
+    top_cards: List[str]
+
+
 @app.post('/play/new_game')
 def start_game(new_game: NewGame, background_tasks: BackgroundTasks):
     background_tasks.add_task(clean_game_store, running_games)
@@ -84,6 +88,18 @@ async def add_players(game_id: str, player_name: str):
     return server_message('success', f'Joined game {game_id}')
 
 
+@app.post('/play/{game_id}/{player_name}/top_cards')
+def set_top_cards(game_id: str, player_name: str, top_cards: SetTopCards):
+    cards = top_cards.top_cards
+    if len(cards) != 3:
+        return server_message('warning', 'You can only select three cards!')
+    current_game = running_games[game_id]
+    player = current_game.players[player_name]
+    current_game.set_top_cards(cards, player)
+
+    return server_message('success', f'Top cards set!')
+
+
 @app.get('/play/{game_id}/end_game')
 def kill_game(game_id: str):
     del running_games[game_id]
@@ -112,8 +128,9 @@ async def get_board(game_id: str, player_name: str):
 
     current_game.draw_cards(player)
     game_overview = {'players': []}
-
+    all_ready = []
     for player_name in current_game.players.keys():
+        all_ready.append(current_game.players[player_name].is_ready)
         game_overview['players'].append(
             {
                 'player_name': player_name,
@@ -124,7 +141,8 @@ async def get_board(game_id: str, player_name: str):
                 'has_won': current_game.players[player_name].has_won,
             }
         )
-    game_overview.update({'board_cards': {'pile': current_game.pile, 'deck': current_game.deck}, 'type': 'update', 'message': ''})
+
+    game_overview.update({'board_cards': {'pile': current_game.pile, 'deck': current_game.deck}, 'all_ready': all(all_ready), 'type': 'update', 'message': ''})
     return game_overview
 
 

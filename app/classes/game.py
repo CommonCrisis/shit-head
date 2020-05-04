@@ -42,15 +42,23 @@ class Board:
 
     def give_cards(self):
         for player_name, player in self.players.items():
-            player.hand = self.deck[:3]
-            del self.deck[:3]
+            player.hand = self.deck[:6]
+            del self.deck[:6]
             player.hidden_cards = self.deck[:3]
             del self.deck[:3]
-            player.top_cards = self.deck[:3]
-            del self.deck[:3]
+            player.top_cards = []
         player_name = rnd.choice(list(self.players.keys()))
         self.players[player_name].is_turn = True
         self.game_started = True
+
+    def set_top_cards(self, cards: List[str], player: Player):
+        if len(cards) == 3:
+            player.top_cards = cards
+            player.hand = [item for item in player.hand if item not in cards]
+            player.is_ready = True
+            return True
+
+        return False
 
     def draw_cards(self, player: Player):
         if not self.deck:
@@ -115,18 +123,20 @@ class Board:
 
             return 'warning', self.messages[4]
 
+        # Check if you need to be less than 6 and you have the correct card
+        if self._get_val(self.pile[-1]) == 5 and self._get_val(card) in lower_five_playable or self._get_val(card) in always_playable:
+
+            return 'success', self._play_card(card, player, self.pile)
+
         # Check if you need to be less than 6
         if self._get_val(self.pile[-1]) == 5 and self._get_val(card) > 5:
             player.hand.append(played_card)
 
             return 'warning', self.messages[3]
 
-        # Check if you need to be less than 6 and you have the correct card
-        if self._get_val(self.pile[-1]) == 5 and self._get_val(card) in lower_five_playable or self._get_val(card) in always_playable:
-            return 'success', self._play_card(card, player, self.pile)
-
         # Turn and playable card
         if player.is_turn and self._get_val(card) >= self._get_val(self.pile[-1]) or self._get_val(card) in always_playable:
+
             return 'success', self._play_card(card, player, self.pile)
 
         # Turn but no playable card
