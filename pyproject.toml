@@ -11,6 +11,8 @@ pyglet = "^1.5"
 fastapi = "^0.53.0"
 typer = "^0.1.1"
 uvicorn = "^0.11.3"
+pycrypto = "^2.6.1 "
+python-dotenv = "^0.13.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"

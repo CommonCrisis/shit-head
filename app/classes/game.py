@@ -3,7 +3,7 @@ from typing import Dict, List
 from datetime import datetime
 from utils.card_deck import CARD_DECK
 from utils.good_job import GOOD_JOB
-
+from utils.card_name_translator import translate_card
 
 from .player import Player
 
@@ -27,6 +27,7 @@ class Board:
         }
         self.game_started = False
         self.last_updated = datetime.now()
+        self.game_log = []
 
     def _get_val(self, card):
         return int(card.split('_')[0])
@@ -74,23 +75,35 @@ class Board:
     def _played_card_message(self, card: str) -> str:
         return rnd.choice(GOOD_JOB.copy())
 
-    def _test_bomb(self, card: str, pile: List[str]) -> str:
+    def _test_bomb(self, player: str, card: str, pile: List[str]) -> str:
         if self._get_val(card) == 10:
+
             return True
         if len(self.pile) >= 3:
             last_cards = [self._get_val(c) for c in self.pile[-3:]] + [self._get_val(card)]
             if all(x == last_cards[0] for x in last_cards):
+
                 return True
 
         return False
 
     def _play_card(self, card: str, player: Player, pile: List[str]) -> str:
-        if self._test_bomb(card, pile):
+        if self._test_bomb(player.player_name, card, pile):
             self.pile = []
+            self.game_log.append({
+                'player': player.player_name,
+                'message': f'{player.player_name} played a {translate_card(card)} and bombed!'
+            })
+
             return self.messages[6]
         else:
             self.pile.append(card)
             self.pass_turn(player)
+            self.game_log.append({
+                'player': player.player_name,
+                'message': f'{player.player_name} played a {translate_card(card)}'
+            })
+
             return self._played_card_message(card)
 
     def _check_card_not_fits_pile(self, card) -> bool:
@@ -156,6 +169,10 @@ class Board:
         player.hand.extend(self.pile)
         self.pass_turn(player)
         self.pile = []
+        self.game_log.append({
+            'player': player.player_name,
+            'message': f'{player.player_name} took the whole pile...'
+        })
 
     def _get_next_player(self, current_player: Player):
         cur_pos = list(self.players.keys()).index(current_player.player_name)

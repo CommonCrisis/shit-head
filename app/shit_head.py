@@ -1,4 +1,3 @@
-import uuid
 from typing import List
 
 import uvicorn
@@ -8,10 +7,16 @@ from pydantic import BaseModel
 from classes.game import Board
 from classes.player import Player
 from utils.clean_game_store import clean_game_store
+from utils.encrypter import encode_strings
 from utils.server_message import server_message
+from fastapi.middleware.gzip import GZipMiddleware
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 app = FastAPI()
+
 
 origins = [
     'http://localhost:3000',
@@ -25,6 +30,8 @@ origins = [
 app.add_middleware(
     CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=500)
+
 
 running_games = {}
 
@@ -65,7 +72,7 @@ def give_cards(game_id: str):
 @app.get('/play/{game_id}/get_players')
 async def get_players(game_id: str):
     if game_id not in running_games.keys():
-        return {'error': f'Game ID {game_id} does not exist'}
+        return {'error': f'Game ID {game_id} does not exist (anymore)'}
 
     current_players = list(running_games[game_id].players.keys())
 
@@ -116,7 +123,11 @@ def leave_game(game_id: str, player_name: str):
 
 @app.get('/play/{game_id}/{player_name}/update')
 async def get_board(game_id: str, player_name: str):
+    if game_id not in running_games.keys():
+        return server_message('error', f'This Game Id does not exist!')
+
     current_game = running_games[game_id]
+
     if player_name not in list(current_game.players.keys()):
         return server_message('error', f'You are not part of this game!')
 
@@ -134,15 +145,24 @@ async def get_board(game_id: str, player_name: str):
         game_overview['players'].append(
             {
                 'player_name': player_name,
-                'hand_cards': current_game.players[player_name].hand,
-                'top_cards': current_game.players[player_name].top_cards,
-                'hidden_cards': current_game.players[player_name].hidden_cards,
+                'hand_cards': encode_strings(current_game.players[player_name].hand),
+                'top_cards': encode_strings(current_game.players[player_name].top_cards),
+                'hidden_cards': encode_strings(current_game.players[player_name].hidden_cards),
                 'is_turn': current_game.players[player_name].is_turn,
                 'has_won': current_game.players[player_name].has_won,
             }
         )
 
-    game_overview.update({'board_cards': {'pile': current_game.pile, 'deck': current_game.deck}, 'all_ready': all(all_ready), 'type': 'update', 'message': ''})
+    game_overview.update(
+        {
+            'board_cards': {'pile': encode_strings(current_game.pile), 'deck': encode_strings(current_game.deck)},
+            'all_ready': all(all_ready),
+            'type': 'update',
+            'message': '',
+            'game_log': current_game.game_log[-4:]
+        }
+    )
+
     return game_overview
 
 

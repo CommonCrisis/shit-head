@@ -141,5 +141,5 @@ dmypy.json
 cython_debug/
 
 # Files
-./dev.py
-./build_image
+dev.py
+build_image
