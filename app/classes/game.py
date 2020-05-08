@@ -32,6 +32,10 @@ class Board:
     def _get_val(self, card):
         return int(card.split('_')[0])
 
+    def _remove_turns(self):
+        for player in self.players:
+            self.players[player].is_turn = False
+
     def reset_player(self, player_name: str):
         target_player = self.players[player_name]
         self.deck.append(target_player.hand)
@@ -87,7 +91,7 @@ class Board:
 
         return False
 
-    def _play_card(self, card: str, player: Player, pile: List[str]) -> str:
+    def _play_card(self, card: str, player: Player, pile: List[str], thrown: bool = False) -> str:
         if self._test_bomb(player.player_name, card, pile):
             self.pile = []
             self.game_log.append({
@@ -98,7 +102,7 @@ class Board:
             return self.messages[6]
         else:
             self.pile.append(card)
-            self.pass_turn(player)
+            self.pass_turn(player, thrown)
             self.game_log.append({
                 'player': player.player_name,
                 'message': f'{player.player_name} played a {translate_card(card)}'
@@ -124,14 +128,14 @@ class Board:
 
         # No pile yet
         if not self.pile:
-            if not player.is_turn and not self._get_val(card) in always_playable:
+            if not player.is_turn:
                 player.hand.append(played_card)
                 return 'warning', self.messages[4]
             else:
                 return 'success', self._play_card(card, player, self.pile)
 
         # Not turn no playable card
-        if not player.is_turn and self._check_card_not_fits_pile(card) and self._get_val(card) not in always_playable:
+        if not player.is_turn and self._check_card_not_fits_pile(card):
             player.hand.append(played_card)
 
             return 'warning', self.messages[4]
@@ -160,7 +164,7 @@ class Board:
 
         # Not turn but playable cards
         if not player.is_turn and self._get_val(card) == self._get_val(self.pile[-1]):
-            return 'success', self._play_card(card, player, self.pile)
+            return 'success', self._play_card(card, player, self.pile, thrown=True)
 
         else:
             print('Asd')
@@ -183,8 +187,12 @@ class Board:
             next_player_name = list(self.players.keys())[0]
             return next_player_name
 
-    def pass_turn(self, player: Player):
+    def pass_turn(self, player: Player, throw: bool = False):
         if player.is_turn:
             player.is_turn = False
+            next_player = self._get_next_player(player)
+            self.players[next_player].is_turn = True
+        if not player.is_turn and throw:
+            self._remove_turns()
             next_player = self._get_next_player(player)
             self.players[next_player].is_turn = True
