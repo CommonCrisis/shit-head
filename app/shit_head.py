@@ -142,10 +142,11 @@ async def get_board(game_id: str, player_name: str):
     all_ready = []
     for player_name in current_game.players.keys():
         all_ready.append(current_game.players[player_name].is_ready)
+        current_game.players[player_name].hand_cards.sort(key=lambda x: int(''.join(filter(str.isdigit, x))))
         game_overview['players'].append(
             {
                 'player_name': player_name,
-                'hand_cards': encode_strings(current_game.players[player_name].hand.sort(key=lambda x: int(''.join(filter(str.isdigit, x))))),
+                'hand_cards': encode_strings(current_game.players[player_name].hand_cards),
                 'top_cards': encode_strings(current_game.players[player_name].top_cards),
                 'hidden_cards': encode_strings(current_game.players[player_name].hidden_cards),
                 'is_turn': current_game.players[player_name].is_turn,
@@ -171,7 +172,7 @@ async def play_turn(game_id: str, player_name: str, card: str):
     player = running_games[game_id].players[player_name]
     message_type, message = running_games[game_id].play_turn(player, card)
 
-    if len(player.hand) < 3 and running_games[game_id].deck:
+    if len(player.hand_cards) < 3 and running_games[game_id].deck:
         running_games[game_id].draw_cards(player)
 
     return server_message(message_type, message)
