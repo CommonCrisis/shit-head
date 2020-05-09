@@ -145,7 +145,7 @@ async def get_board(game_id: str, player_name: str):
         game_overview['players'].append(
             {
                 'player_name': player_name,
-                'hand_cards': encode_strings(current_game.players[player_name].hand),
+                'hand_cards': encode_strings(current_game.players[player_name].hand.sort(key=lambda x: int(''.join(filter(str.isdigit, x))))),
                 'top_cards': encode_strings(current_game.players[player_name].top_cards),
                 'hidden_cards': encode_strings(current_game.players[player_name].hidden_cards),
                 'is_turn': current_game.players[player_name].is_turn,

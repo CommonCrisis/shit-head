@@ -38,7 +38,7 @@ class Board:
 
     def reset_player(self, player_name: str):
         target_player = self.players[player_name]
-        self.deck.append(target_player.hand)
+        self.deck.append(target_player.hand_cards)
         self.deck.append(target_player.hidden_cards)
         self.deck.append(target_player.top_cards)
         rnd.shuffle(self.deck)
@@ -47,7 +47,7 @@ class Board:
 
     def give_cards(self):
         for player_name, player in self.players.items():
-            player.hand = self.deck[:6]
+            player.hand_cards = self.deck[:6]
             del self.deck[:6]
             player.hidden_cards = self.deck[:3]
             del self.deck[:3]
@@ -59,7 +59,7 @@ class Board:
     def set_top_cards(self, cards: List[str], player: Player):
         if len(cards) == 3:
             player.top_cards = cards
-            player.hand = [item for item in player.hand if item not in cards]
+            player.hand_cards = [item for item in player.hand_cards if item not in cards]
             player.is_ready = True
             return True
 
@@ -68,12 +68,12 @@ class Board:
     def draw_cards(self, player: Player):
         if not self.deck:
             return
-        if len(player.hand) < 3 and self.deck:
-            cards_to_draw = 3 - len(player.hand)
+        if len(player.hand_cards) < 3 and self.deck:
+            cards_to_draw = 3 - len(player.hand_cards)
             for draw in range(0, cards_to_draw):
                 if not self.deck:
                     return
-                player.hand.append(self.deck[0])
+                player.hand_cards.append(self.deck[0])
                 del self.deck[0]
 
     def _played_card_message(self, card: str) -> str:
@@ -98,6 +98,9 @@ class Board:
                 'player': player.player_name,
                 'message': f'{player.player_name} played a {translate_card(card)} and bombed!'
             })
+            if thrown:
+                self._remove_turns()
+                player.is_turn = True
 
             return self.messages[6]
         else:
@@ -123,54 +126,56 @@ class Board:
 
         # Card not valid
         if card in self.messages.keys():
-            player.hand.append(played_card)
+            player.hand_cards.append(played_card)
             return 'warning', self.messages[card]
 
         # No pile yet
         if not self.pile:
             if not player.is_turn:
-                player.hand.append(played_card)
+                player.hand_cards.append(played_card)
                 return 'warning', self.messages[4]
             else:
                 return 'success', self._play_card(card, player, self.pile)
 
         # Not turn no playable card
-        if not player.is_turn and self._check_card_not_fits_pile(card):
-            player.hand.append(played_card)
+        elif not player.is_turn and self._check_card_not_fits_pile(card):
+            player.hand_cards.append(played_card)
 
             return 'warning', self.messages[4]
 
         # Check if you need to be less than 6 and you have the correct card
-        if self._get_val(self.pile[-1]) == 5 and self._get_val(card) in lower_five_playable or self._get_val(card) in always_playable:
+        elif self._get_val(self.pile[-1]) == 5 and self._get_val(card) in lower_five_playable or self._get_val(card) in always_playable:
 
             return 'success', self._play_card(card, player, self.pile)
 
         # Check if you need to be less than 6
-        if self._get_val(self.pile[-1]) == 5 and self._get_val(card) > 5:
-            player.hand.append(played_card)
+        elif self._get_val(self.pile[-1]) == 5 and self._get_val(card) > 5:
+            player.hand_cards.append(played_card)
 
             return 'warning', self.messages[3]
 
         # Turn and playable card
-        if player.is_turn and self._get_val(card) >= self._get_val(self.pile[-1]) or self._get_val(card) in always_playable:
+        elif player.is_turn and self._get_val(card) >= self._get_val(self.pile[-1]) or self._get_val(card) in always_playable:
 
             return 'success', self._play_card(card, player, self.pile)
 
         # Turn but no playable card
-        if player.is_turn and self._check_card_not_fits_pile(card) and self._get_val(card) not in always_playable:
-            player.hand.append(played_card)
+        elif player.is_turn and self._check_card_not_fits_pile(card) and self._get_val(card) not in always_playable:
+            player.hand_cards.append(played_card)
 
             return 'warning', self.messages[5]
 
         # Not turn but playable cards
-        if not player.is_turn and self._get_val(card) == self._get_val(self.pile[-1]):
+        elif not player.is_turn and self._get_val(card) == self._get_val(self.pile[-1]):
             return 'success', self._play_card(card, player, self.pile, thrown=True)
 
         else:
             print('Asd')
 
     def take_pile(self, player: Player):
-        player.hand.extend(self.pile)
+        if not player.is_turn:
+            return 'warning', self.messages[4]
+        player.hand_cards.extend(self.pile)
         self.pass_turn(player)
         self.pile = []
         self.game_log.append({
@@ -196,3 +201,4 @@ class Board:
             self._remove_turns()
             next_player = self._get_next_player(player)
             self.players[next_player].is_turn = True
+
