@@ -130,7 +130,7 @@ async def get_board(game_id: str, player_name: str):
 
     current_game = running_games[game_id]
 
-    if len([player for player in current_game.players if not current_game.players[player].has_won]) <= 1 and getenv('ENV') == 'prod':
+    if len([player for player in current_game.players if not current_game.players[player].has_won]) <= 1 and getenv('LOC') == 'prod':
         kill_game(game_id)
 
         return server_message('info', f'You are the shithead!')
