@@ -21,7 +21,7 @@ EXPOSE 5000
 
 # Copy the data to image
 COPY ./app /app
-COPY ./.env .env
+COPY ./.env_prod .env
 WORKDIR /app
 ENV PYTHONPATH=/app
 
