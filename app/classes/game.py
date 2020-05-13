@@ -11,6 +11,7 @@ from .player import Player
 class Board:
     def __init__(self, players: Dict[str, Player], game_id: str):
         self.game_id = game_id
+        self.host = None
         self.pile = []
         self.deck = CARD_DECK.copy()
         rnd.shuffle(self.deck)
@@ -31,6 +32,9 @@ class Board:
 
     def _get_val(self, card):
         return int(card.split('_')[0])
+
+    def _get_type(self, card):
+        return card.split('_')[1]
 
     def _remove_turns(self):
         for player in self.players:
@@ -96,7 +100,9 @@ class Board:
             self.pile = []
             self.game_log.append({
                 'player': player.player_name,
-                'message': f'{player.player_name} played a {translate_card(card)} and bombed!'
+                'card_number': translate_card(self._get_val(card)),
+                'card_type': self._get_type(card),
+                'message': 'bomb'
             })
             if thrown:
                 self._remove_turns()
@@ -108,7 +114,9 @@ class Board:
             self.pass_turn(player, thrown)
             self.game_log.append({
                 'player': player.player_name,
-                'message': f'{player.player_name} played a {translate_card(card)}'
+                'card_number': translate_card(self._get_val(card)),
+                'card_type': self._get_type(card),
+                'message': ''
             })
 
             return self._played_card_message(card)
@@ -180,16 +188,20 @@ class Board:
         self.pile = []
         self.game_log.append({
             'player': player.player_name,
-            'message': f'{player.player_name} took the whole pile...'
+            'card_number': '',
+            'card_type': 'sad',
+            'message': 'took the pile'
         })
 
     def _get_next_player(self, current_player: Player):
-        cur_pos = list(self.players.keys()).index(current_player.player_name)
-        if cur_pos + 1 < len(self.players.keys()):
-            next_player_name = list(self.players.keys())[(cur_pos + 1)]
+        still_playing = [player for player in self.players if not self.players[player].has_won]
+
+        cur_pos = still_playing.index(current_player.player_name)
+        if cur_pos + 1 < len(still_playing):
+            next_player_name = still_playing[(cur_pos + 1)]
             return next_player_name
         else:
-            next_player_name = list(self.players.keys())[0]
+            next_player_name = still_playing[0]
             return next_player_name
 
     def pass_turn(self, player: Player, throw: bool = False):
@@ -201,4 +213,3 @@ class Board:
             self._remove_turns()
             next_player = self._get_next_player(player)
             self.players[next_player].is_turn = True
-

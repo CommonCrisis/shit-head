@@ -46,7 +46,6 @@ def play_match():
     all_true.append(play_turn('Ulli', 'Hanna', '12_D', test_game))
     all_true.append(play_turn('Hanna', 'Hans', '13_C', test_game))
     all_true.append(play_turn('Ulli', 'Hanna', '13_D', test_game))
-    print(all_true)
     assert False not in all_true, 'all true'
 
 
@@ -86,10 +85,23 @@ def bomb_4_cards_turn():
     assert turns == [True, True, True, False]
 
 
+def skip_player_won():
+    hans_hand_cards = ['3_H', '12_H', '10_H']
+    ulli_hand_cards = ['4_D', '12_D', '13_D']
+    hanna_hand_cards = ['4_C', '4_D', '4_H', '12_S']
+    test_game = set_up_game(hans_hand_cards, ulli_hand_cards, hanna_hand_cards, 'Hanna')
+    assert play_turn('Hanna', 'Hans', '4_C', test_game)
+    assert play_turn('Hans', 'Ulli', '12_H', test_game)
+    test_game.players['Hans'].has_won = True
+    assert play_turn('Ulli', 'Hanna', '12_D', test_game)
+    assert play_turn('Hanna', 'Ulli', '12_S', test_game)
+
+
 play_match()
 take_pile_while_turn()
 take_pile_while_not_turn()
 bomb_4_cards_turn()
+skip_player_won()
 
 
 ### TODOs ####

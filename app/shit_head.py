@@ -11,6 +11,7 @@ from utils.encrypter import encode_strings
 from utils.server_message import server_message
 from fastapi.middleware.gzip import GZipMiddleware
 from dotenv import load_dotenv
+from os import getenv
 
 
 load_dotenv()
@@ -57,9 +58,10 @@ def start_game(new_game: NewGame, background_tasks: BackgroundTasks):
         return server_message('error', f'Game with ID {new_game.game_id} already exists.')
 
     players = {new_game.host: Player(new_game.host)}
-    new_game = Board(players, new_game.game_id)
-    running_games.update({new_game.game_id: new_game})
-    return server_message('success', f'New game with ID {new_game.game_id} created.')
+    game = Board(players, new_game.game_id)
+    game.host = new_game.host
+    running_games.update({new_game.game_id: game})
+    return server_message('success', f'New game with ID {game.game_id} created.')
 
 
 @app.get('/play/{game_id}/give_cards')
@@ -76,7 +78,7 @@ async def get_players(game_id: str):
 
     current_players = list(running_games[game_id].players.keys())
 
-    return {'players': current_players, 'started': running_games[game_id].game_started}
+    return {'players': current_players, 'started': running_games[game_id].game_started, 'host': running_games[game_id].host}
 
 
 @app.get('/play/{game_id}/add_player/{player_name}')
@@ -128,14 +130,18 @@ async def get_board(game_id: str, player_name: str):
 
     current_game = running_games[game_id]
 
+    if len([player for player in current_game.players if not current_game.players[player].has_won]) <= 1 and getenv('ENV') == 'prod':
+        kill_game(game_id)
+
+        return server_message('info', f'You are the shithead!')
+
     if player_name not in list(current_game.players.keys()):
         return server_message('error', f'You are not part of this game!')
 
     player = current_game.players[player_name]
 
     if player.check_won_game():
-        kill_game(game_id)
-        return server_message('success', f'You have won the game!')
+        return server_message('success', f'Well done, you played all your cards :)')
 
     current_game.draw_cards(player)
     game_overview = {'players': []}
